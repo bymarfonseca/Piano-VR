@@ -93,8 +93,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: babed66f44e8b5445b185fac4e02e130, type: 2}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 78151f5e58fb9f749bd5225f789faa27, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 8073ebb6bb2ca4bed9b9264b9a44d1e6, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 16bdd98029ef547dfa5975210c0790e4, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -176,17 +176,17 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 0.31764707, g: 0.31764707, b: 0.31764707, a: 1}
+  m_Intensity: 1.2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.8
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -216,18 +216,18 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_ColorTemperature: 5772
-  m_UseColorTemperature: 0
+  m_ColorTemperature: 4800
+  m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
   m_ShadowRadius: 0
-  m_ShadowAngle: 0
+  m_ShadowAngle: 3
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
@@ -266,6 +266,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &77511799
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -387,6 +399,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &102387878
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -508,6 +532,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &173214722
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -629,6 +665,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &185502680
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -750,6 +798,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &247414863
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -871,6 +931,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &277079667
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -992,6 +1064,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &285788793
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1113,6 +1197,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &337935149
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1234,6 +1330,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &407685076
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1355,6 +1463,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &456693513
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1476,6 +1596,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &460250438
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1597,6 +1729,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &524976550
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1796,6 +1940,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &576595061
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1917,6 +2073,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &587953888
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2038,6 +2206,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &645066153
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2159,6 +2339,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &647808061
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2280,6 +2472,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &659497046
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2401,6 +2605,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &681578939
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2522,6 +2738,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &696849030
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2643,6 +2871,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &761391051
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2764,6 +3004,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &761741539
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2885,6 +3137,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &818591555
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3006,6 +3270,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &857954401
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3127,6 +3403,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &916802775
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3248,6 +3536,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &926192158
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3369,6 +3669,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &937975138
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3490,6 +3802,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &966547478
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3611,6 +3935,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &999815936
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3732,6 +4068,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1034186712
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3853,6 +4201,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1036125329
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3974,6 +4334,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1043365194
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4095,6 +4467,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1077875669
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4216,6 +4600,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1096379494
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4337,6 +4733,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1104676834
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4438,6 +4846,56 @@ MonoBehaviour:
   m_StartingInteractionStrengthFilters: []
   m_AutoFindParentInteractableInHierarchy: 0
   m_ParentInteractableObject: {fileID: 0}
+--- !u!1 &1135421584
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1135421586}
+  - component: {fileID: 1135421585}
+  m_Layer: 0
+  m_Name: Light Probe Group
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!220 &1135421585
+LightProbeGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135421584}
+  m_Enabled: 1
+  m_SourcePositions:
+  - {x: 1, y: 1, z: 1}
+  - {x: 1, y: 1, z: -1}
+  - {x: 1, y: -1, z: 1}
+  - {x: 1, y: -1, z: -1}
+  - {x: -1, y: 1, z: 1}
+  - {x: -1, y: 1, z: -1}
+  - {x: -1, y: -1, z: 1}
+  - {x: -1, y: -1, z: -1}
+  m_Dering: 1
+--- !u!4 &1135421586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135421584}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.70048, y: 0.9705, z: 2.20599}
+  m_LocalScale: {x: 3, y: 2, z: 3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1141058613 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4001760174524314526, guid: 7cb6b36dce0914e5990a48faf94c595e, type: 3}
@@ -4458,6 +4916,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1141058616
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4579,6 +5049,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1161473582
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4700,6 +5182,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1186149174
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4826,6 +5320,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1225381043
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4947,6 +5453,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1337418178
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5419,6 +5937,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1399342964
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5540,6 +6070,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1399551766
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5661,6 +6203,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1449776756
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6902,6 +7456,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1518601840
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7023,6 +7589,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1529199993
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7144,6 +7722,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1538796896
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7265,6 +7855,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1646079855
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7386,6 +7988,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1657848142
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7507,6 +8121,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1702569464
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7628,6 +8254,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1778455116
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7749,6 +8387,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1783505469
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7870,6 +8520,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1819474518
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7996,6 +8658,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1879026594
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8117,6 +8791,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1891286766
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8350,6 +9036,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1905636726
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8471,6 +9169,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1943987991
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8592,6 +9302,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &1994244039
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8713,6 +9435,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &2063975830
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8822,9 +9556,81 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8586641846553635843, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -8344013743787073979, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -8286305753667425884, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -8130959153555918019, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -7126962143739526721, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -6877395300682880919, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: -6689036041284674117, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
       propertyPath: m_Name
       value: anime_class_room
+      objectReference: {fileID: 0}
+    - target: {fileID: -6672836651358329078, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -5878723127668162527, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -5374661685431302482, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -5176011904711749698, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -4217466504437697784, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -4058610807409712235, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -2877250060282941058, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -2820392024304540581, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -2029516603153581176, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 1287803460280524298, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 1815452018661936519, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2196994329007080878, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 2774220344278030320, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
       propertyPath: m_LocalScale.x
@@ -8878,6 +9684,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4522226037753684804, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558920201249936095, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 5458544982461565906, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733923285595092983, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6094458532774274631, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6377377256741042724, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6654127409277854054, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6969471285787423491, guid: bcd9dcdf81b204b11b0878f5134fa9c3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -8909,6 +9747,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &2095831505
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9030,6 +9880,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &2118327676
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9151,6 +10013,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &2133068736
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9272,6 +10146,18 @@ MonoBehaviour:
   pressDepth: 0.008
   pressSpeed: 20
   returnSpeed: 8
+  rangoToleranciaHit: 0.08
+  colorTurnoActual: {r: 1, g: 0.92, b: 0.016, a: 1}
+  colorEnEspera: {r: 0, g: 0.6, b: 1, a: 1}
+  maxGlowIntensity: 2.5
+  notaNombreBase: 
+  offsetOctavaRelativa: 0
+  octavaCalculada: 4
+  nombreNotaCompleto: 
+  textoEtiquetaOctava: {fileID: 0}
+  prefabPopUpNota: {fileID: 0}
+  mostrarPopUpNota: 1
+  isPressed: 0
 --- !u!54 &2134060741
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9382,3 +10268,4 @@ SceneRoots:
   - {fileID: 1462945992}
   - {fileID: 574423176}
   - {fileID: 1471721359}
+  - {fileID: 1135421586}
