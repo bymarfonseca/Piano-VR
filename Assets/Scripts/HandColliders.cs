@@ -1,57 +1,103 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// Provee detección de proximidad y contacto físico para dedos (Hand Tracking) y mandos de Meta Quest.
+/// Permite que las teclas se activen al rozar o tocar suavemente sin necesidad de presionar botones.
+/// </summary>
 public class HandColliders : MonoBehaviour
 {
-    public float detectionRadius = 0.015f;
-    public float velocidadMinima = 0.15f;
-    public float tiempoMinEntreNotas = 0.15f;
+    [Header("Configuración de Detección")]
+    [Tooltip("Radio de la esfera de detección en cada punta de dedo / mando.")]
+    public float detectionRadius = 0.02f;
+
+    [Tooltip("Tiempo mínimo entre activaciones consecutivas con el mismo dedo/mando.")]
+    public float tiempoMinEntreNotas = 0.08f;
+
+    [Tooltip("Máscara de capas de las teclas del piano.")]
     public LayerMask teclasMask;
 
-    Dictionary<string, PianoKey> teclaActual  = new Dictionary<string, PianoKey>();
-    Dictionary<string, Vector3>  posAnterior  = new Dictionary<string, Vector3>();
-    Dictionary<string, float>    ultimoToque  = new Dictionary<string, float>();
+    [Header("Protección de Inicio")]
+    [Tooltip("Tiempo en segundos tras cargar la escena durante el cual se ignoran toques automáticos.")]
+    public float startupGracePeriod = 0.5f;
 
-    // Teclas actualmente presionadas por cualquier dedo
-    Dictionary<PianoKey, string> teclaPresionadaPor = new Dictionary<PianoKey, string>();
+    private readonly Dictionary<string, PianoKey> teclaActual = new Dictionary<string, PianoKey>();
+    private readonly Dictionary<string, float> ultimoToque = new Dictionary<string, float>();
+    private readonly Dictionary<PianoKey, string> teclaPresionadaPor = new Dictionary<PianoKey, string>();
+
+    void Start()
+    {
+        if (detectionRadius < 0.015f)
+        {
+            detectionRadius = 0.02f;
+        }
+
+        // Si teclasMask no está configurada, usar capa 6 (Teclas) y capa 0 (Default)
+        if (teclasMask.value == 0)
+        {
+            teclasMask = (1 << 6) | (1 << 0);
+        }
+
+        Debug.Log($"[HandColliders] Inicializado en '{gameObject.name}' con radio={detectionRadius}m, mask={teclasMask.value}");
+    }
 
     void Update()
     {
+        // Prevención de activación automática al iniciar la escena
+        if (Time.timeSinceLevelLoad < startupGracePeriod)
+            return;
+
         Transform[] todos = GetComponentsInChildren<Transform>(true);
 
         foreach (Transform t in todos)
         {
+            if (t == null) continue;
             string n = t.name.ToLower();
 
+            // Detectar puntas de dedos (manos virtuales) o interactores/puntas de mandos VR
             bool esPunta = (n.Contains("index")  && (n.Contains("tip") || n.Contains("distal"))) ||
-                           (n.Contains("middle")  && (n.Contains("tip") || n.Contains("distal"))) ||
-                           (n.Contains("ring")    && (n.Contains("tip") || n.Contains("distal"))) ||
-                           (n.Contains("pinky")   && (n.Contains("tip") || n.Contains("distal"))) ||
-                           (n.Contains("thumb")   && (n.Contains("tip") || n.Contains("distal")));
+                           (n.Contains("middle") && (n.Contains("tip") || n.Contains("distal"))) ||
+                           (n.Contains("ring")   && (n.Contains("tip") || n.Contains("distal"))) ||
+                           (n.Contains("pinky")  && (n.Contains("tip") || n.Contains("distal"))) ||
+                           (n.Contains("little") && (n.Contains("tip") || n.Contains("distal"))) ||
+                           (n.Contains("thumb")  && (n.Contains("tip") || n.Contains("distal"))) ||
+                           n.Contains("poke")    || n.Contains("attach") || n.Contains("controller");
+
+            // Si el nombre no coincide, verificar si tiene tags de mano o dedo
+            if (!esPunta)
+            {
+                string tagStr = t.gameObject.tag;
+                if (tagStr == "PlayerFinger" || tagStr == "PlayerHand" || tagStr == "Hand")
+                {
+                    esPunta = true;
+                }
+            }
 
             if (!esPunta) continue;
 
-            // Velocidad del dedo
-            posAnterior.TryGetValue(t.name, out Vector3 posVieja);
-            float velocidadY = posVieja != Vector3.zero
-                ? (t.position.y - posVieja.y) / Time.deltaTime
-                : 0f;
-            posAnterior[t.name] = t.position;
-
-            // Detectar tecla
+            // Detectar teclas en el radio de contacto
             Collider[] cols = Physics.OverlapSphere(t.position, detectionRadius, teclasMask);
             if (cols.Length == 0)
+            {
                 cols = Physics.OverlapSphere(t.position + Vector3.down * 0.005f, detectionRadius, teclasMask);
+            }
 
             // Buscar la tecla más cercana
             PianoKey keyDetectada = null;
             float distanciaMinima = float.MaxValue;
             foreach (var col in cols)
             {
+                if (col == null) continue;
+
                 PianoKey k = col.GetComponent<PianoKey>();
+                if (k == null)
+                {
+                    k = col.GetComponentInParent<PianoKey>();
+                }
+
                 if (k != null)
                 {
-                    float dist = Vector3.Distance(t.position, col.transform.position);
+                    float dist = Vector3.Distance(t.position, col.ClosestPoint(t.position));
                     if (dist < distanciaMinima)
                     {
                         distanciaMinima = dist;
@@ -63,14 +109,12 @@ public class HandColliders : MonoBehaviour
             teclaActual.TryGetValue(t.name, out PianoKey keyAnterior);
             ultimoToque.TryGetValue(t.name, out float ultimoToqueTime);
 
-            // Salió de la tecla
+            // Salió de la tecla anterior
             if (keyDetectada != keyAnterior)
             {
                 if (keyAnterior != null)
                 {
-                    // Solo hacer OnPokeExit si este dedo era el que la presionaba
-                    if (teclaPresionadaPor.TryGetValue(keyAnterior, out string dedoQuePresiona)
-                        && dedoQuePresiona == t.name)
+                    if (teclaPresionadaPor.TryGetValue(keyAnterior, out string dedoQuePresiona) && dedoQuePresiona == t.name)
                     {
                         keyAnterior.OnPokeExit();
                         teclaPresionadaPor.Remove(keyAnterior);
@@ -79,12 +123,12 @@ public class HandColliders : MonoBehaviour
                 teclaActual[t.name] = keyDetectada;
             }
 
-            // Tocar tecla — cada dedo puede tocar su propia tecla
+            // Activación por contacto físico/roce directo (sin exigir presionar botones ni alta velocidad)
             if (keyDetectada != null &&
-                velocidadY < -velocidadMinima &&
                 Time.time - ultimoToqueTime > tiempoMinEntreNotas &&
-                !teclaPresionadaPor.ContainsKey(keyDetectada)) // evita doble toque
+                !teclaPresionadaPor.ContainsKey(keyDetectada))
             {
+                Debug.Log($"[HandColliders] Tecla activada por roce/toque: '{keyDetectada.nombreNotaCompleto}' por '{t.name}'");
                 keyDetectada.OnPokeEnter();
                 ultimoToque[t.name] = Time.time;
                 teclaPresionadaPor[keyDetectada] = t.name;

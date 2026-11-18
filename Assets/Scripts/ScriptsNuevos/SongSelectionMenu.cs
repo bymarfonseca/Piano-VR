@@ -2,9 +2,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using PianoVR;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SongSelectionMenu : MonoBehaviour
 {
+    [System.Serializable]
+    public class SceneField
+    {
+        [SerializeField] private Object sceneAsset;
+        [SerializeField] private string sceneName = "";
+
+        public string SceneName => sceneName;
+
+        public static implicit operator string(SceneField sceneField)
+        {
+            return sceneField != null ? sceneField.SceneName : "";
+        }
+    }
+
+#if UNITY_EDITOR
+    [CustomPropertyDrawer(typeof(SceneField))]
+    public class SceneFieldPropertyDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            EditorGUI.BeginProperty(position, GUIContent.none, property);
+            SerializedProperty sceneAsset = property.FindPropertyRelative("sceneAsset");
+            SerializedProperty sceneName = property.FindPropertyRelative("sceneName");
+
+            position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+            if (sceneAsset != null)
+            {
+                sceneAsset.objectReferenceValue = EditorGUI.ObjectField(position, sceneAsset.objectReferenceValue, typeof(SceneAsset), false);
+                if (sceneAsset.objectReferenceValue != null)
+                {
+                    sceneName.stringValue = (sceneAsset.objectReferenceValue as SceneAsset).name;
+                }
+            }
+            EditorGUI.EndProperty();
+        }
+    }
+#endif
+
     public static SongSelectionMenu Instance { get; private set; }
 
     [Header("Base de Datos de Canciones")]
@@ -36,6 +78,9 @@ public class SongSelectionMenu : MonoBehaviour
     [Header("Conexion al Sistema")]
     [SerializeField] private NoteSpawner noteSpawner;
 
+    [Header("Configuración de Salida")]
+    [SerializeField] private SceneField escenaDestino;
+
     private SongData selectedSong;    // Canción actualmente mostrada/seleccionada en el panel
     private SongData playingSong;     // Canción que está SONANDO actualmente en la escena
     private bool isPlaying = false; 
@@ -48,17 +93,24 @@ public class SongSelectionMenu : MonoBehaviour
 
     private void Start()
     {
-        btnPrincipiante.onClick.AddListener(() => FilterByDifficulty(DifficultyLevel.Principiante));
-        btnIntermedio.onClick.AddListener(() => FilterByDifficulty(DifficultyLevel.Intermedio));
-        btnAvanzado.onClick.AddListener(() => FilterByDifficulty(DifficultyLevel.Avanzado));
+        if (btnPrincipiante != null)
+            btnPrincipiante.onClick.AddListener(() => FilterByDifficulty(DifficultyLevel.Principiante));
+        if (btnIntermedio != null)
+            btnIntermedio.onClick.AddListener(() => FilterByDifficulty(DifficultyLevel.Intermedio));
+        if (btnAvanzado != null)
+            btnAvanzado.onClick.AddListener(() => FilterByDifficulty(DifficultyLevel.Avanzado));
 
-        btnPlay.onClick.AddListener(OnPlayPressed);
+        if (btnPlay != null)
+            btnPlay.onClick.AddListener(OnPlayPressed);
 
+        Debug.Log("[SongSelectionMenu] Menú de canciones iniciado.");
         FilterByDifficulty(DifficultyLevel.Principiante);
     }
 
     public void FilterByDifficulty(DifficultyLevel difficulty)
     {
+        Debug.Log($"[SongSelectionMenu] [UI] Filtro de dificultad presionado: {difficulty}");
+
         foreach (Transform child in songListContainer)
         {
             Destroy(child.gameObject);
@@ -74,7 +126,10 @@ public class SongSelectionMenu : MonoBehaviour
                 itemObj.GetComponentInChildren<TextMeshProUGUI>().text = song.songName;
 
                 Button itemBtn = itemObj.GetComponent<Button>();
-                itemBtn.onClick.AddListener(() => SelectSong(song));
+                itemBtn.onClick.AddListener(() => {
+                    Debug.Log($"[SongSelectionMenu] [UI] Canción seleccionada de la lista: '{song.songName}'");
+                    SelectSong(song);
+                });
             }
 
             SelectSong(filtered[0]);
@@ -108,13 +163,11 @@ public class SongSelectionMenu : MonoBehaviour
 
         btnPlay.interactable = true;
 
-        // EVALUACIÓN DE ESTADO DEL BOTÓN:
-        // Si la canción seleccionada es exactamente la que está sonando, muestra "Detener la canción"
-        // De lo contrario, muestra "Comenzar a Tocar"
         bool esLaCancionSonando = isPlaying && (playingSong == selectedSong);
         ActualizarTextoBoton(esLaCancionSonando);
-
         ActualizarRécordUI();
+
+        Debug.Log($"[SongSelectionMenu] Canción activa: '{song.songName}' | Compositor: {song.composer} | BPM: {song.bpm}");
     }
 
     public void ActualizarRécordUI()
@@ -158,6 +211,7 @@ public class SongSelectionMenu : MonoBehaviour
         txtComposer.text = "";
         txtBPM.text = "";
         txtFocus.text = "No hay piezas disponibles en esta dificultad.";
+
         if (imgCover != null) imgCover.gameObject.SetActive(false);
         btnPlay.interactable = false;
 
@@ -178,21 +232,20 @@ public class SongSelectionMenu : MonoBehaviour
     {
         if (selectedSong == null || noteSpawner == null) return;
 
-        // CASO 1: Si presionamos el botón cuando estamos viendo la canción que YA ESTÁ SONANDO
         if (isPlaying && playingSong == selectedSong)
         {
+            Debug.Log($"[SongSelectionMenu] [UI] Botón Play pulsado -> Deteniendo canción '{selectedSong.songName}'");
             DetenerModoCancion();
         }
-        // CASO 2: Si presionamos el botón para iniciar una canción nueva (o reemplazar la anterior)
         else
         {
-            // Detiene cualquier pista previa que estuviera cayendo
+            Debug.Log($"[SongSelectionMenu] [UI] Botón Play pulsado -> Iniciando canción '{selectedSong.songName}' ({selectedSong.bpm} BPM)");
+
             if (noteSpawner != null)
             {
                 noteSpawner.StopCurrentSong();
             }
 
-            // Inicia la nueva canción seleccionada
             noteSpawner.StartSong(selectedSong);
             playingSong = selectedSong;
             isPlaying = true;
@@ -211,6 +264,7 @@ public class SongSelectionMenu : MonoBehaviour
         playingSong = null;
         isPlaying = false;
         ActualizarTextoBoton(false);
+        Debug.Log("[SongSelectionMenu] Reproducción de canción detenida.");
     }
 
     private void ActualizarTextoBoton(bool estaSonandoEstaCancion)
@@ -225,14 +279,31 @@ public class SongSelectionMenu : MonoBehaviour
     }
 
     public void OnSongEnded()
-{
-    playingSong = null;
-    isPlaying = false;
+    {
+        Debug.Log($"[SongSelectionMenu] Canción finalizada.");
+        playingSong = null;
+        isPlaying = false;
 
-    // 1. Restaurar el texto del botón a "Comenzar a Tocar"
-    ActualizarTextoBoton(false);
+        ActualizarTextoBoton(false);
+        ActualizarRécordUI();
+    }
 
-    // 2. Refrescar el récord y las estrellas en la interfaz
-    ActualizarRécordUI();
-}
+    public void SalirAEscenaDestino()
+    {
+        if (escenaDestino == null || string.IsNullOrEmpty(escenaDestino.SceneName))
+        {
+            Debug.LogWarning("[SongSelectionMenu] No has arrastrado ninguna escena en 'Escena Destino'.");
+            return;
+        }
+
+        if (isPlaying)
+        {
+            DetenerModoCancion();
+        }
+
+        if (SceneTransitionManager.Instance != null)
+        {
+            SceneTransitionManager.Instance.TransitionToScene(escenaDestino);
+        }
+    }
 }
