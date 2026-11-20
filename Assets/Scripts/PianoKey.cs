@@ -19,9 +19,38 @@ public class PianoKey : MonoBehaviour,
     IPointerClickHandler
 {
     [Header("Física y Movimiento")]
-    public float pressDepth  = 0.008f;
-    public float pressSpeed  = 20f;
-    public float returnSpeed = 8f;
+    public float pressDepth          = 0.008f;
+    public float pressSpeed          = 38f;
+    public float returnSpeed         = 12f;
+    [Tooltip("Ángulo de inclinación local (grados) estilo bisagra trasera de piano real al presionar.")]
+    public float pressTiltAngle      = 3.5f;
+    [Tooltip("Factor de ancho del BoxCollider estático (0.88 = 88%) para crear un canal de seguridad entre teclas vecinas.")]
+    [Range(0.5f, 1f)]
+    public float factorAnchoCollider = 0.88f;
+    [Tooltip("Recorrido muerto mínimo (metros) de profundidad relativa desde el contacto antes de disparar la nota (3.5 mm).")]
+    public float preTravelMinimo     = 0.0035f;
+
+    [Header("Dinámica de Volumen por Velocidad")]
+    [Tooltip("Volumen mínimo audible para toques suaves.")]
+    [Range(0.05f, 1f)]
+    public float volumenMinimo          = 0.28f;
+    [Tooltip("Volumen máximo para toques rápidos/fuertes.")]
+    [Range(0.1f, 1f)]
+    public float volumenMaximo          = 1.0f;
+    [Tooltip("Velocidad vertical mínima (m/s) mapeada al volumen mínimo.")]
+    public float velocidadImpactoSuave  = 0.12f;
+    [Tooltip("Velocidad vertical fuerte (m/s) mapeada al volumen máximo.")]
+    public float velocidadImpactoFuerte = 0.90f;
+
+    [Header("Feedback Visual de Impacto")]
+    [Tooltip("Color del destello breve al presionar la tecla (activo en Modo Libre y Modo Música).")]
+    [ColorUsage(true, true)]
+    public Color colorPulsoImpacto = new Color(0.35f, 0.85f, 1f, 1f);
+    [Tooltip("Duración en segundos del destello inicial al presionar.")]
+    public float duracionPulsoImpacto = 0.22f;
+    [Tooltip("Intensidad sutil de brillo mientras la tecla permanece hundida (0 a 1).")]
+    [Range(0f, 1f)]
+    public float intensidadSostenida = 0.30f;
 
     [Header("Protección al Iniciar la Escena")]
     [Tooltip("Tiempo en segundos tras cargar la escena donde se ignoran colisiones para evitar que las teclas se presionen solas al arrancar.")]
@@ -61,9 +90,16 @@ public class PianoKey : MonoBehaviour,
     BoxCollider boxCollider;
     Vector3     restLocalPosition;
     Vector3     pressedLocalPosition;
+    Quaternion  restLocalRotation;
+    Quaternion  pressedLocalRotation;
     public bool isPressed = false;
+    private float pulsoImpacto = 0f;
+    private float preTravelVisualNorm = 0f;
 
     Renderer keyRenderer;
+    Transform visualTransform;
+    bool visualEsPropio = false;
+    bool anchoColliderAjustado = false;
     MaterialPropertyBlock propBlock;
     static readonly int EmissionColorProp = Shader.PropertyToID("_EmissionColor");
 
@@ -91,43 +127,145 @@ public class PianoKey : MonoBehaviour,
         "wrist", "palm", "b_r_", "b_l_", "ovr"
     };
 
-    // --- Añadir dentro de la clase PianoKey ---
-    private readonly HashSet<FingerPianoTouch> dedosPresionando = new HashSet<FingerPianoTouch>();
-    private float ultimoDisparoTiempo = -1f;
-    private const float COOLDOWN_TECLA = 0.08f;
+    // ── Control centralizado de dedos (identificador único = Transform) ─────
+    // Comportamiento de clic de ratón: Down -> isPressed = true, Up -> isPressed = false.
+    // Sin cooldowns ni temporizadores: solo el contacto físico decide.
+    private readonly HashSet<Transform> dedosPresionando = new HashSet<Transform>();
 
-    public void RegistrarToqueDedo(FingerPianoTouch dedo)
+    /// <summary>
+    /// Intenta presionar la tecla con un dedo. Devuelve true solo si la tecla estaba
+    /// libre (ningún dedo ni interactor) y este dedo pasa a ser su dueño.
+    /// Opcionalmente recibe la velocidad vertical de impacto (m/s) para modular el volumen.
+    /// </summary>
+    public bool RegistrarToqueDedo(Transform dedo, float velocidadImpacto = -1f)
     {
-        if (Time.timeSinceLevelLoad < startupGracePeriod) return;
-        if (dedo == null || dedosPresionando.Contains(dedo)) return;
+        if (dedo == null) return false;
+        if (Time.timeSinceLevelLoad < startupGracePeriod) return false;
+        if (dedosPresionando.Contains(dedo)) return true; // ya es el dueño, no vuelve a sonar
 
-        bool estabaLibre = (dedosPresionando.Count == 0 && interactoresActivos == 0);
+        // Tecla ocupada (hundida, otro dedo o un interactor/rayo) -> rechazar
+        if (isPressed || dedosPresionando.Count > 0 || interactoresActivos > 0) return false;
+
         dedosPresionando.Add(dedo);
-
-        if (estabaLibre && !isPressed && (Time.time - ultimoDisparoTiempo >= COOLDOWN_TECLA))
-        {
-            ultimoDisparoTiempo = Time.time;
-            OnPokeEnter();
-        }
+        OnPokeEnter(velocidadImpacto); // isPressed = true
+        return true;
     }
 
-    public void LiberarToqueDedo(FingerPianoTouch dedo)
+    /// <summary>
+    /// Verifica si la punta del dedo ha penetrado al menos 'preTravel' (por defecto 6 mm)
+    /// por debajo de la cara superior del BoxCollider estático de la tecla.
+    /// </summary>
+    public bool CumplePreTravel(Vector3 posicionDedo, float preTravel = -1f)
+    {
+        Collider col = boxCollider != null ? boxCollider : GetComponent<Collider>();
+        if (col == null) return false;
+
+        float umbral = preTravel >= 0f ? preTravel : preTravelMinimo;
+        float caraSuperiorY = col.bounds.max.y;
+        float caraInferiorY = col.bounds.min.y;
+
+        return posicionDedo.y <= (caraSuperiorY - umbral) && posicionDedo.y >= (caraInferiorY - 0.015f);
+    }
+
+    /// <summary>
+    /// Actualiza el hundimiento visual progresivo (pre-travel visual entre 0 mm y 3.5 mm)
+    /// para que la malla visual acompañe la altura del dedo antes de emitir el sonido.
+    /// El BoxCollider raíz permanece 100% estático.
+    /// </summary>
+    public void EstablecerPreTravelVisual(float profundidadMetros, float profundidadDisparoMetros = 0.0035f)
+    {
+        if (isPressed)
+        {
+            preTravelVisualNorm = 0f;
+            return;
+        }
+
+        float denom = profundidadDisparoMetros > 0.0001f ? profundidadDisparoMetros : 0.0035f;
+        preTravelVisualNorm = Mathf.Clamp01(profundidadMetros / denom);
+    }
+
+    /// <summary>
+    /// Libera el dedo. Si ya no queda ningún dedo ni interactor, la tecla vuelve a reposo.
+    /// </summary>
+    public void LiberarToqueDedo(Transform dedo)
     {
         if (dedo == null) return;
 
-        if (dedosPresionando.Remove(dedo))
+        if (dedosPresionando.Remove(dedo) &&
+            dedosPresionando.Count == 0 && interactoresActivos == 0 && isPressed)
         {
-            if (dedosPresionando.Count == 0 && interactoresActivos == 0 && isPressed)
-            {
-                OnPokeExit();
-            }
+            OnPokeExit(); // isPressed = false
         }
+    }
+
+    /// <summary>
+    /// Devuelve un identificador canónico por dedo físico completo (mano + dedo),
+    /// de modo que todos los nodos del mismo dedo (tip, distal, etc.) compartan
+    /// el mismo ID y jamás actúen como dos dedos distintos.
+    /// </summary>
+    public static string ObtenerIdDedoFisico(Transform t)
+    {
+        if (t == null) return string.Empty;
+
+        string dedo = null;
+        string lado = null;
+
+        Transform actual = t;
+        int profundidad = 0;
+        while (actual != null && profundidad < 8)
+        {
+            string n = actual.name.ToLowerInvariant();
+
+            if (dedo == null)
+            {
+                if (n.Contains("thumb") || n.Contains("pulgar")) dedo = "Thumb";
+                else if (n.Contains("index") || n.Contains("indice")) dedo = "Index";
+                else if (n.Contains("middle") || n.Contains("medio")) dedo = "Middle";
+                else if (n.Contains("ring") || n.Contains("anular")) dedo = "Ring";
+                else if (n.Contains("pinky") || n.Contains("little") || n.Contains("menique")) dedo = "Pinky";
+            }
+
+            if (lado == null)
+            {
+                if (n.Contains("left") || n.StartsWith("l_") || n.Contains("_l_") || n.Contains("izq"))
+                    lado = "L";
+                else if (n.Contains("right") || n.StartsWith("r_") || n.Contains("_r_") || n.Contains("der"))
+                    lado = "R";
+            }
+
+            if (dedo != null && lado != null) break;
+            actual = actual.parent;
+            profundidad++;
+        }
+
+        if (dedo != null)
+            return (lado ?? "U") + "_" + dedo;
+
+        return "T_" + t.GetInstanceID();
+    }
+
+    /// <summary>
+    /// Comprobación de salida compartida por HandColliders y FingerPianoTouch:
+    /// el dedo sigue "dentro" si está a menos de 'radio' del collider de la tecla,
+    /// evaluado en su posición y en su posición desplazada pressDepth hacia abajo
+    /// (compensa el hundimiento de la tecla con el dedo quieto). No usa OnTriggerExit.
+    /// </summary>
+    public bool DedoDentroDeVolumen(Vector3 posicionDedo, float radio)
+    {
+        Collider col = boxCollider != null ? boxCollider : GetComponent<Collider>();
+        if (col == null) return false;
+
+        Vector3 posCompensada = posicionDedo + Vector3.down * pressDepth;
+
+        return Vector3.Distance(posicionDedo,  col.ClosestPoint(posicionDedo))  <= radio ||
+               Vector3.Distance(posCompensada, col.ClosestPoint(posCompensada)) <= radio;
     }
 
     void Awake()
     {
-        keyRenderer = GetComponent<Renderer>();
         propBlock = new MaterialPropertyBlock();
+        SepararMallaVisual();
+
         if (!todasLasTeclas.Contains(this))
             todasLasTeclas.Add(this);
 
@@ -135,18 +273,102 @@ public class PianoKey : MonoBehaviour,
         AsegurarFisicasTecla();
     }
 
+    /// <summary>
+    /// Separa dinámicamente la malla visual (MeshFilter + MeshRenderer) en un objeto visual
+    /// independiente sin colliders para que el BoxCollider de la tecla permanezca 100% estático
+    /// en el mundo mientras la malla baja y rota al ser presionada.
+    /// Se coloca como hermano bajo transform.parent (misma escala/rotación local) para evitar
+    /// deformaciones (shear) por escala no uniforme al rotar.
+    /// </summary>
+    private void SepararMallaVisual()
+    {
+        if (visualTransform != null) return;
+
+        MeshFilter   rootFilter   = GetComponent<MeshFilter>();
+        MeshRenderer rootRenderer = GetComponent<MeshRenderer>();
+
+        if (rootFilter != null && rootRenderer != null)
+        {
+            GameObject visualObj = new GameObject(gameObject.name + "_Visual");
+            visualObj.layer = gameObject.layer;
+
+            Transform vtf = visualObj.transform;
+            vtf.SetParent(transform.parent, false);
+            vtf.localPosition = transform.localPosition;
+            vtf.localRotation = transform.localRotation;
+            vtf.localScale    = transform.localScale;
+
+            MeshFilter childFilter = visualObj.AddComponent<MeshFilter>();
+            childFilter.sharedMesh = rootFilter.sharedMesh;
+
+            MeshRenderer childRenderer = visualObj.AddComponent<MeshRenderer>();
+            childRenderer.sharedMaterials        = rootRenderer.sharedMaterials;
+            childRenderer.shadowCastingMode      = rootRenderer.shadowCastingMode;
+            childRenderer.receiveShadows         = rootRenderer.receiveShadows;
+            childRenderer.lightProbeUsage        = rootRenderer.lightProbeUsage;
+            childRenderer.reflectionProbeUsage   = rootRenderer.reflectionProbeUsage;
+
+            // Ocultar el renderer en la raíz física (conservando el BoxCollider estático en la raíz)
+            rootRenderer.enabled = false;
+
+            visualTransform = vtf;
+            keyRenderer     = childRenderer;
+            visualEsPropio  = true;
+        }
+        else
+        {
+            // Si la tecla ya tiene un hijo visual separado, animar solo ese hijo
+            Renderer childRend = GetComponentInChildren<Renderer>();
+            if (childRend != null && childRend.transform != transform)
+            {
+                keyRenderer     = childRend;
+                visualTransform = childRend.transform;
+            }
+            else
+            {
+                keyRenderer     = GetComponent<Renderer>();
+                visualTransform = transform;
+            }
+        }
+    }
+
+    void OnEnable()
+    {
+        if (visualEsPropio && visualTransform != null)
+            visualTransform.gameObject.SetActive(true);
+    }
+
+    void OnDisable()
+    {
+        if (visualEsPropio && visualTransform != null)
+            visualTransform.gameObject.SetActive(false);
+    }
+
     void OnDestroy()
     {
         todasLasTeclas.Remove(this);
+        if (visualEsPropio && visualTransform != null)
+            Destroy(visualTransform.gameObject);
     }
 
     void Start()
     {
-        audioSource          = GetComponent<AudioSource>();
-        rb                   = GetComponent<Rigidbody>();
-        boxCollider          = GetComponent<BoxCollider>();
-        restLocalPosition    = transform.localPosition;
-        pressedLocalPosition = restLocalPosition - new Vector3(0, pressDepth, 0);
+        audioSource = GetComponent<AudioSource>();
+        rb          = GetComponent<Rigidbody>();
+        boxCollider = GetComponent<BoxCollider>();
+
+        if (visualTransform == null)
+            SepararMallaVisual();
+
+        // Garantizar respuesta mecánica firme y natural incluso en teclas con valores antiguos serializados en escena
+        if (pressSpeed <= 20f)  pressSpeed  = 38f;
+        if (returnSpeed <= 8f)  returnSpeed = 12f;
+
+        restLocalPosition    = visualTransform.localPosition;
+        restLocalRotation    = visualTransform.localRotation;
+        pressedLocalPosition = restLocalPosition - new Vector3(0f, pressDepth, 0f);
+        // Rotación ligera en el eje Z local (bisagra trasera: el frente de la tecla baja más que la parte trasera)
+        pressedLocalRotation = restLocalRotation * Quaternion.Euler(0f, 0f, pressTiltAngle);
 
         int octavaBase = (PianoManager.Instance != null) ? PianoManager.Instance.octavaBaseActual : 3;
         ReconfigurarOctava(octavaBase);
@@ -161,12 +383,27 @@ public class PianoKey : MonoBehaviour,
     /// </summary>
     public void AsegurarFisicasTecla()
     {
-        // 1. BoxCollider marcado como Is Trigger
+        // 1. BoxCollider marcado como Is Trigger y ajustado al 84% de su ancho entre teclas vecinas
         if (boxCollider == null)
             boxCollider = GetComponent<BoxCollider>();
         if (boxCollider == null)
             boxCollider = gameObject.AddComponent<BoxCollider>();
         boxCollider.isTrigger = true;
+
+        if (!anchoColliderAjustado)
+        {
+            anchoColliderAjustado = true;
+            // Identificar qué eje horizontal local (X o Z) corresponde al ancho entre teclas vecinas
+            // (en este sintetizador rotado 90° en Y, Z local es el ancho y X local es el largo)
+            float tamWorldX = boxCollider.size.x * Mathf.Abs(transform.lossyScale.x);
+            float tamWorldZ = boxCollider.size.z * Mathf.Abs(transform.lossyScale.z);
+            Vector3 sz = boxCollider.size;
+            if (tamWorldZ < tamWorldX)
+                sz.z *= factorAnchoCollider;
+            else
+                sz.x *= factorAnchoCollider;
+            boxCollider.size = sz;
+        }
 
         // 2. Rigidbody marcado como Is Kinematic y sin gravedad
         if (rb == null)
@@ -478,13 +715,31 @@ public class PianoKey : MonoBehaviour,
 
     public void OnPokeEnter()
     {
+        OnPokeEnter(-1f);
+    }
+
+    public void OnPokeEnter(float velocidadImpacto)
+    {
+        // Una tecla hundida jamás vuelve a sonar mientras siga presionada
+        if (isPressed) return;
         isPressed = true;
-        Debug.Log($"[PianoKey] Sonando tecla: '{nombreNotaCompleto}' ({gameObject.name}) | Octava calculada: {octavaCalculada}");
+        preTravelVisualNorm = 0f;
+        Debug.Log($"[PianoKey] Sonando tecla: '{nombreNotaCompleto}' ({gameObject.name}) | Octava calculada: {octavaCalculada} | vel={velocidadImpacto:F2} m/s");
 
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
 
         if (audioSource != null)
         {
+            if (velocidadImpacto > 0f)
+            {
+                float factor = Mathf.InverseLerp(velocidadImpactoSuave, velocidadImpactoFuerte, velocidadImpacto);
+                audioSource.volume = Mathf.Lerp(volumenMinimo, volumenMaximo, factor);
+            }
+            else
+            {
+                audioSource.volume = volumenMaximo;
+            }
+
             if (audioSource.isPlaying)
             {
                 audioSource.Stop();
@@ -512,7 +767,9 @@ public class PianoKey : MonoBehaviour,
             }
         }
 
-        ApplyEmission(Color.black, 0f);
+        // Pulso visual inmediato al impacto (visible tanto en Modo Libre como en Modo Música)
+        pulsoImpacto = 1f;
+        ApplyEmission(colorPulsoImpacto, 1f);
 
         EvaluarAciertoNota();
     }
@@ -520,6 +777,7 @@ public class PianoKey : MonoBehaviour,
     public void OnPokeExit()
     {
         isPressed = false;
+        preTravelVisualNorm = 0f;
         Debug.Log($"[PianoKey] Reposo de tecla: '{nombreNotaCompleto}' ({gameObject.name})");
     }
 
@@ -676,6 +934,46 @@ public class PianoKey : MonoBehaviour,
 
     void Update()
     {
+        if (pulsoImpacto > 0f)
+        {
+            float paso = duracionPulsoImpacto > 0.001f ? Time.deltaTime / duracionPulsoImpacto : 1f;
+            pulsoImpacto = Mathf.Max(0f, pulsoImpacto - paso);
+        }
+
+        // Animar ÚNICAMENTE la malla visual separada; el Transform raíz y su BoxCollider nunca se mueven ni rotan
+        if (visualTransform != null && visualTransform != transform)
+        {
+            Vector3    targetLocalPos;
+            Quaternion targetLocalRot;
+            float      speed;
+
+            if (isPressed)
+            {
+                targetLocalPos = pressedLocalPosition;
+                targetLocalRot = pressedLocalRotation;
+                speed          = pressSpeed;
+            }
+            else if (preTravelVisualNorm > 0.001f)
+            {
+                // Pre-travel visual progresivo (0 mm a 3.5 mm acompañando la altura del dedo antes del sonido)
+                float ratioPreTravel = Mathf.Clamp01(preTravelMinimo / Mathf.Max(pressDepth, 0.001f));
+                float factorVisual   = preTravelVisualNorm * ratioPreTravel;
+                targetLocalPos = Vector3.Lerp(restLocalPosition, pressedLocalPosition, factorVisual);
+                targetLocalRot = Quaternion.Slerp(restLocalRotation, pressedLocalRotation, factorVisual);
+                speed          = pressSpeed;
+            }
+            else
+            {
+                targetLocalPos = restLocalPosition;
+                targetLocalRot = restLocalRotation;
+                speed          = returnSpeed;
+            }
+
+            float t = 1f - Mathf.Exp(-speed * Time.deltaTime);
+            visualTransform.localPosition = Vector3.Lerp(visualTransform.localPosition, targetLocalPos, t);
+            visualTransform.localRotation = Quaternion.Slerp(visualTransform.localRotation, targetLocalRot, t);
+        }
+
 #if UNITY_EDITOR || UNITY_STANDALONE
         ActualizarMouseEditor();
 #endif
@@ -747,7 +1045,12 @@ public class PianoKey : MonoBehaviour,
 
         foreach (var key in todasLasTeclas)
         {
-            key.ApplyEmission(Color.black, 0f);
+            if (key == null) continue;
+            float intensidadPulso = Mathf.Max(key.pulsoImpacto, key.isPressed ? key.intensidadSostenida : 0f);
+            if (intensidadPulso > 0f)
+                key.ApplyEmission(key.colorPulsoImpacto, intensidadPulso);
+            else
+                key.ApplyEmission(Color.black, 0f);
         }
 
         if (notasEnEscena.Count == 0) return;
@@ -787,7 +1090,11 @@ public class PianoKey : MonoBehaviour,
 
             float progreso = nota.ObtenerProgreso();
 
-            key.ApplyEmission(baseColor, progreso);
+            // Priorizar el destello breve de impacto sobre el brillo guía; al desvanecerse vuelve el guía
+            if (key.pulsoImpacto <= 0f)
+            {
+                key.ApplyEmission(baseColor, progreso);
+            }
         }
     }
 
@@ -805,20 +1112,17 @@ public class PianoKey : MonoBehaviour,
 
     void FixedUpdate()
     {
-        Vector3 targetLocal = isPressed ? pressedLocalPosition : restLocalPosition;
-        float   speed       = isPressed ? pressSpeed : returnSpeed;
-        Vector3 targetWorld = transform.parent != null
-            ? transform.parent.TransformPoint(targetLocal)
-            : targetLocal;
+        // Si la malla visual fue separada (caso normal), el Transform raíz y su BoxCollider
+        // permanecen 100% estáticos y la animación visual ocurre en Update() sin mover físicas.
+        if (visualTransform != null && visualTransform != transform) return;
 
-        if (rb != null && !rb.isKinematic)
-        {
-            rb.MovePosition(Vector3.Lerp(transform.position, targetWorld, Time.fixedDeltaTime * speed));
-        }
-        else
-        {
-            transform.position = Vector3.Lerp(transform.position, targetWorld, Time.fixedDeltaTime * speed);
-        }
+        Vector3    targetLocalPos = isPressed ? pressedLocalPosition : restLocalPosition;
+        Quaternion targetLocalRot = isPressed ? pressedLocalRotation : restLocalRotation;
+        float      speed          = isPressed ? pressSpeed : returnSpeed;
+        float      t              = 1f - Mathf.Exp(-speed * Time.fixedDeltaTime);
+
+        transform.localPosition = Vector3.Lerp(transform.localPosition, targetLocalPos, t);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, targetLocalRot, t);
     }
 
 #if UNITY_EDITOR || UNITY_STANDALONE
