@@ -56,6 +56,10 @@ public class PianoKey : MonoBehaviour,
     [Tooltip("Tiempo en segundos tras cargar la escena donde se ignoran colisiones para evitar que las teclas se presionen solas al arrancar.")]
     public float startupGracePeriod = 0.25f;
 
+    [Header("Anti-Rebote (Debounce Hand Tracking)")]
+    [Tooltip("Tiempo mínimo en segundos entre activaciones físicas consecutivas de la misma tecla (160 ms).")]
+    public float cooldownRebote = 0.16f;
+
     [Header("Configuración de Impacto")]
     [Tooltip("Distancia vertical máxima (en metros) entre la nota y la tecla para considerar un acierto.")]
     public float rangoToleranciaHit = 0.08f;
@@ -95,11 +99,18 @@ public class PianoKey : MonoBehaviour,
     public bool isPressed = false;
     private float pulsoImpacto = 0f;
     private float preTravelVisualNorm = 0f;
+    private float ultimoTiempoToque = -10f;
+
+    // Estado de redirección inteligente (Smart Snap / Magnetismo de Tecla)
+    private PianoKey teclaRedirigidaActiva = null;
+    private bool presionadaPorRedireccion = false;
+    private float tiempoExpiraRedireccion = 0f;
 
     Renderer keyRenderer;
     Transform visualTransform;
     bool visualEsPropio = false;
     bool anchoColliderAjustado = false;
+    bool teclaOcultaEnEscena = false;
     MaterialPropertyBlock propBlock;
     static readonly int EmissionColorProp = Shader.PropertyToID("_EmissionColor");
 
@@ -133,8 +144,17 @@ public class PianoKey : MonoBehaviour,
     private readonly HashSet<Transform> dedosPresionando = new HashSet<Transform>();
 
     /// <summary>
+    /// Indica si la tecla se encuentra aún dentro de la ventana anti-rebote (cooldownRebote)
+    /// tras su última activación física.
+    /// </summary>
+    public bool EstaEnCooldownRebote()
+    {
+        return (Time.time - ultimoTiempoToque) < cooldownRebote;
+    }
+
+    /// <summary>
     /// Intenta presionar la tecla con un dedo. Devuelve true solo si la tecla estaba
-    /// libre (ningún dedo ni interactor) y este dedo pasa a ser su dueño.
+    /// libre (ningún dedo ni interactor), fuera del cooldown anti-rebote y este dedo pasa a ser su dueño.
     /// Opcionalmente recibe la velocidad vertical de impacto (m/s) para modular el volumen.
     /// </summary>
     public bool RegistrarToqueDedo(Transform dedo, float velocidadImpacto = -1f)
@@ -143,11 +163,20 @@ public class PianoKey : MonoBehaviour,
         if (Time.timeSinceLevelLoad < startupGracePeriod) return false;
         if (dedosPresionando.Contains(dedo)) return true; // ya es el dueño, no vuelve a sonar
 
-        // Tecla ocupada (hundida, otro dedo o un interactor/rayo) -> rechazar
+        // Tecla ocupada o dentro del tiempo anti-rebote (cooldownRebote) -> rechazar por completo
         if (isPressed || dedosPresionando.Count > 0 || interactoresActivos > 0) return false;
+        if (EstaEnCooldownRebote()) return false;
 
         dedosPresionando.Add(dedo);
         OnPokeEnter(velocidadImpacto); // isPressed = true
+
+        // Si OnPokeEnter rechazó el toque (ej. tecla destino en Smart Snap aún en cooldownRebote), liberar dueño
+        if (!isPressed)
+        {
+            dedosPresionando.Remove(dedo);
+            return false;
+        }
+
         return true;
     }
 
@@ -174,7 +203,7 @@ public class PianoKey : MonoBehaviour,
     /// </summary>
     public void EstablecerPreTravelVisual(float profundidadMetros, float profundidadDisparoMetros = 0.0035f)
     {
-        if (isPressed)
+        if (isPressed || EstaEnCooldownRebote())
         {
             preTravelVisualNorm = 0f;
             return;
@@ -287,6 +316,31 @@ public class PianoKey : MonoBehaviour,
         MeshFilter   rootFilter   = GetComponent<MeshFilter>();
         MeshRenderer rootRenderer = GetComponent<MeshRenderer>();
 
+        // En 'ModoMusica' (o si el MeshRenderer de la tecla estaba desactivado en la escena),
+        // el piano es solo para reproducción de audio: no crear mallas visuales ni activar renderers.
+        bool esEscenaModoMusica = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "ModoMusica";
+        if (esEscenaModoMusica || (rootRenderer != null && !rootRenderer.enabled))
+        {
+            teclaOcultaEnEscena = true;
+            if (rootRenderer != null) rootRenderer.enabled = false;
+
+            if (esEscenaModoMusica && transform.parent != null)
+            {
+                // Asegurar que la carcasa/soporte del piano tampoco sea visible ni colisionable en ModoMusica
+                MeshRenderer[] renderersPadre = transform.parent.GetComponents<MeshRenderer>();
+                for (int i = 0; i < renderersPadre.Length; i++)
+                    if (renderersPadre[i] != null) renderersPadre[i].enabled = false;
+
+                Collider[] collidersPadre = transform.parent.GetComponents<Collider>();
+                for (int i = 0; i < collidersPadre.Length; i++)
+                    if (collidersPadre[i] != null) collidersPadre[i].enabled = false;
+            }
+
+            visualTransform = transform;
+            keyRenderer = null;
+            return;
+        }
+
         if (rootFilter != null && rootRenderer != null)
         {
             GameObject visualObj = new GameObject(gameObject.name + "_Visual");
@@ -383,11 +437,24 @@ public class PianoKey : MonoBehaviour,
     /// </summary>
     public void AsegurarFisicasTecla()
     {
-        // 1. BoxCollider marcado como Is Trigger y ajustado al 84% de su ancho entre teclas vecinas
         if (boxCollider == null)
             boxCollider = GetComponent<BoxCollider>();
         if (boxCollider == null)
             boxCollider = gameObject.AddComponent<BoxCollider>();
+
+        // Si la tecla está oculta (ej. ModoMusica, donde solo suena el audio), desactivar su Collider
+        if (teclaOcultaEnEscena || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "ModoMusica")
+        {
+            teclaOcultaEnEscena = true;
+            boxCollider.isTrigger = true;
+            boxCollider.enabled = false;
+
+            MeshRenderer mr = GetComponent<MeshRenderer>();
+            if (mr != null) mr.enabled = false;
+            return;
+        }
+
+        // 1. BoxCollider marcado como Is Trigger y ajustado al 88% de su ancho entre teclas vecinas
         boxCollider.isTrigger = true;
 
         if (!anchoColliderAjustado)
@@ -445,6 +512,13 @@ public class PianoKey : MonoBehaviour,
 
     private void ConfigurarInteraccionVR()
     {
+        if (teclaOcultaEnEscena)
+        {
+            var interactableExistente = GetComponent<XRSimpleInteractable>();
+            if (interactableExistente != null) interactableExistente.enabled = false;
+            return;
+        }
+
         var simpleInteractable = GetComponent<XRSimpleInteractable>();
         if (simpleInteractable == null)
         {
@@ -694,6 +768,7 @@ public class PianoKey : MonoBehaviour,
     private void RegistrarEntradaInteractuador()
     {
         if (Time.timeSinceLevelLoad < startupGracePeriod) return;
+        if (!isPressed && EstaEnCooldownRebote()) return;
 
         interactoresActivos++;
 
@@ -720,12 +795,74 @@ public class PianoKey : MonoBehaviour,
 
     public void OnPokeEnter(float velocidadImpacto)
     {
-        // Una tecla hundida jamás vuelve a sonar mientras siga presionada
+        // Una tecla hundida o dentro de la ventana anti-rebote jamás vuelve a sonar
         if (isPressed) return;
+        if (EstaEnCooldownRebote()) return;
+
+        // Asistencia de Precisión / Magnetismo de Tecla (Smart Snap) en ModoLibreMenu:
+        // Si hay una canción activa (con AutoPlayer desactivado) y el jugador toca una tecla vecina
+        // dentro de 'toleranciaSemitonos' y 'ventanaTiempoAsistencia', redirige la activación a la tecla esperada.
+        NotaMovimiento notaObjetivoDirecta = null;
+        if (NoteSpawner.Instance != null &&
+            NoteSpawner.Instance.IntentarResolverNotaConAsistencia(this, out PianoKey teclaAsistida, out NotaMovimiento notaAsistida))
+        {
+            if (teclaAsistida != null && teclaAsistida != this && notaAsistida != null)
+            {
+                // Si la tecla destino redirigida acaba de sonar dentro de su cooldownRebote, ignorar el rebote
+                if (teclaAsistida.EstaEnCooldownRebote())
+                {
+                    return;
+                }
+
+                ultimoTiempoToque = Time.time;
+                isPressed = true;
+                preTravelVisualNorm = 0f;
+                teclaRedirigidaActiva = teclaAsistida;
+                teclaAsistida.ActivarPorRedireccionMagnetica(velocidadImpacto, notaAsistida);
+                return;
+            }
+            else if (teclaAsistida == this && notaAsistida != null)
+            {
+                notaObjetivoDirecta = notaAsistida;
+            }
+        }
+
+        ultimoTiempoToque = Time.time;
         isPressed = true;
         preTravelVisualNorm = 0f;
+        teclaRedirigidaActiva = null;
         Debug.Log($"[PianoKey] Sonando tecla: '{nombreNotaCompleto}' ({gameObject.name}) | Octava calculada: {octavaCalculada} | vel={velocidadImpacto:F2} m/s");
 
+        ReproducirAudioYFeedbackTecla(velocidadImpacto);
+        EvaluarAciertoNota(notaObjetivoDirecta);
+    }
+
+    /// <summary>
+    /// Activa esta tecla cuando el sistema de Magnetismo (Smart Snap) redirige un toque desde una tecla vecina.
+    /// Anima visualmente el hundimiento y brillo de esta tecla correcta, reproduce su audio y registra el acierto.
+    /// </summary>
+    public void ActivarPorRedireccionMagnetica(float velocidadImpacto, NotaMovimiento notaObjetivo)
+    {
+        if (EstaEnCooldownRebote()) return;
+
+        ultimoTiempoToque = Time.time;
+        presionadaPorRedireccion = true;
+        tiempoExpiraRedireccion = Time.time + 0.55f;
+        preTravelVisualNorm = 0f;
+
+        Debug.Log($"[PianoKey] [Smart Snap] Activada tecla asistida: '{nombreNotaCompleto}' ({gameObject.name}) | vel={velocidadImpacto:F2} m/s");
+
+        ReproducirAudioYFeedbackTecla(velocidadImpacto);
+        EvaluarAciertoNota(notaObjetivo);
+    }
+
+    public void LiberarRedireccionMagnetica()
+    {
+        presionadaPorRedireccion = false;
+    }
+
+    private void ReproducirAudioYFeedbackTecla(float velocidadImpacto)
+    {
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
 
         if (audioSource != null)
@@ -755,7 +892,7 @@ public class PianoKey : MonoBehaviour,
             AmbientAudioManager.Instance.NotificarTeclaTocada();
         }
 
-        // Instancia el Pop-up flotante en 3D
+        // Instancia el Pop-up flotante en 3D sobre la tecla activada
         if (mostrarPopUpNota && prefabPopUpNota != null)
         {
             Vector3 posicionSpawn = transform.position + new Vector3(0, 0.08f, 0);
@@ -767,38 +904,45 @@ public class PianoKey : MonoBehaviour,
             }
         }
 
-        // Pulso visual inmediato al impacto (visible tanto en Modo Libre como en Modo Música)
+        // Pulso visual inmediato al impacto
         pulsoImpacto = 1f;
         ApplyEmission(colorPulsoImpacto, 1f);
-
-        EvaluarAciertoNota();
     }
 
     public void OnPokeExit()
     {
         isPressed = false;
         preTravelVisualNorm = 0f;
+        if (teclaRedirigidaActiva != null)
+        {
+            teclaRedirigidaActiva.LiberarRedireccionMagnetica();
+            teclaRedirigidaActiva = null;
+        }
         Debug.Log($"[PianoKey] Reposo de tecla: '{nombreNotaCompleto}' ({gameObject.name})");
     }
 
-    private void EvaluarAciertoNota()
+    private void EvaluarAciertoNota(NotaMovimiento notaObjetivoDirecta = null)
     {
-        NotaMovimiento notaCercana = null;
-        float menorDistanciaY = float.MaxValue;
+        NotaMovimiento notaCercana = notaObjetivoDirecta;
 
-        // Recorre las notas activas en pantalla
-        foreach (var nota in notasEnEscena)
+        if (notaCercana == null)
         {
-            if (nota != null && nota.targetKey == this)
-            {
-                float yImpactoIdeal = transform.position.y;
-                float diferenciaDistancia = Mathf.Abs(nota.transform.position.y - yImpactoIdeal);
+            float menorDistanciaY = float.MaxValue;
 
-                // Evalúa si la nota está dentro del margen de tolerancia vertical
-                if (diferenciaDistancia <= rangoToleranciaHit && diferenciaDistancia < menorDistanciaY)
+            // Recorre las notas activas en pantalla
+            foreach (var nota in notasEnEscena)
+            {
+                if (nota != null && nota.targetKey == this)
                 {
-                    menorDistanciaY = diferenciaDistancia;
-                    notaCercana = nota;
+                    float yImpactoIdeal = transform.position.y;
+                    float diferenciaDistancia = Mathf.Abs(nota.transform.position.y - yImpactoIdeal);
+
+                    // Evalúa si la nota está dentro del margen de tolerancia vertical
+                    if (diferenciaDistancia <= rangoToleranciaHit && diferenciaDistancia < menorDistanciaY)
+                    {
+                        menorDistanciaY = diferenciaDistancia;
+                        notaCercana = nota;
+                    }
                 }
             }
         }
@@ -819,6 +963,37 @@ public class PianoKey : MonoBehaviour,
         {
             Debug.Log($"[PianoKey] Se presionó {nombreNotaCompleto} pero no había ninguna nota dentro del rango (Tolerancia: {rangoToleranciaHit}m).");
         }
+    }
+
+    /// <summary>
+    /// Devuelve el índice absoluto en semitonos (escala cromática tipo MIDI, ej. C4 = 60, C#4 = 61)
+    /// para calcular la distancia en semitonos entre la tecla física tocada y la nota esperada.
+    /// </summary>
+    public int ObtenerIndiceSemitono()
+    {
+        int semitono = 0;
+        string baseUpper = (notaNombreBase ?? "").Trim().ToUpperInvariant();
+        switch (baseUpper)
+        {
+            case "C":  semitono = 0;  break;
+            case "C#":
+            case "DB": semitono = 1;  break;
+            case "D":  semitono = 2;  break;
+            case "D#":
+            case "EB": semitono = 3;  break;
+            case "E":  semitono = 4;  break;
+            case "F":  semitono = 5;  break;
+            case "F#":
+            case "GB": semitono = 6;  break;
+            case "G":  semitono = 7;  break;
+            case "G#":
+            case "AB": semitono = 8;  break;
+            case "A":  semitono = 9;  break;
+            case "A#":
+            case "BB": semitono = 10; break;
+            case "B":  semitono = 11; break;
+        }
+        return (octavaCalculada + 1) * 12 + semitono;
     }
 
     private void ExtraerNotaYOctavaInicial()
@@ -940,6 +1115,11 @@ public class PianoKey : MonoBehaviour,
             pulsoImpacto = Mathf.Max(0f, pulsoImpacto - paso);
         }
 
+        if (presionadaPorRedireccion && Time.time >= tiempoExpiraRedireccion)
+        {
+            presionadaPorRedireccion = false;
+        }
+
         // Animar ÚNICAMENTE la malla visual separada; el Transform raíz y su BoxCollider nunca se mueven ni rotan
         if (visualTransform != null && visualTransform != transform)
         {
@@ -947,13 +1127,15 @@ public class PianoKey : MonoBehaviour,
             Quaternion targetLocalRot;
             float      speed;
 
-            if (isPressed)
+            bool hundirVisualmente = (isPressed && teclaRedirigidaActiva == null) || presionadaPorRedireccion;
+
+            if (hundirVisualmente)
             {
                 targetLocalPos = pressedLocalPosition;
                 targetLocalRot = pressedLocalRotation;
                 speed          = pressSpeed;
             }
-            else if (preTravelVisualNorm > 0.001f)
+            else if (preTravelVisualNorm > 0.001f && teclaRedirigidaActiva == null)
             {
                 // Pre-travel visual progresivo (0 mm a 3.5 mm acompañando la altura del dedo antes del sonido)
                 float ratioPreTravel = Mathf.Clamp01(preTravelMinimo / Mathf.Max(pressDepth, 0.001f));
@@ -1046,7 +1228,8 @@ public class PianoKey : MonoBehaviour,
         foreach (var key in todasLasTeclas)
         {
             if (key == null) continue;
-            float intensidadPulso = Mathf.Max(key.pulsoImpacto, key.isPressed ? key.intensidadSostenida : 0f);
+            bool hundida = (key.isPressed && key.teclaRedirigidaActiva == null) || key.presionadaPorRedireccion;
+            float intensidadPulso = Mathf.Max(key.pulsoImpacto, hundida ? key.intensidadSostenida : 0f);
             if (intensidadPulso > 0f)
                 key.ApplyEmission(key.colorPulsoImpacto, intensidadPulso);
             else
